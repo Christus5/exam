@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
@@ -11,11 +13,25 @@ from ecommerce.models import Ticket
 @login_required
 def home_view(request):
     user = request.user
-    orders_info = user.order_set.all()
-    orders_info_price = user.order_set.all().aggregate(Sum('price'))
+    orders = user.order_set.all()
+    orders_info_spent = orders.all().aggregate(Sum('price'))['price__sum']
+
+    now = timezone.now()
+    orders_week = orders.filter(ticket__end_date__gte=now - timezone.timedelta(weeks=1))
+    orders_week_spent = orders_week.aggregate(Sum('price'))['price__sum']
+
+    orders_month = orders.filter(ticket__end_date__gte=now - timezone.timedelta(weeks=4))
+    orders_month_spent = orders_month.aggregate(Sum('price'))['price__sum']
+
+    orders_year = orders.filter(ticket__end_date__gte=now - timezone.timedelta(days=365))
+    orders_year_spent = orders_year.aggregate(Sum('price'))['price__sum']
+
     return render(request, 'ecommerce/home.html', {
-        'orders': orders_info,
-        'orders_info_price': orders_info_price['price__sum']
+        'orders': orders,
+        'orders_info_price': orders_info_spent,
+        'week': {'orders': orders_week, 'spent': orders_week_spent},
+        'month': {'orders': orders_month, 'spent': orders_month_spent},
+        'year': {'orders': orders_year, 'spent': orders_year_spent}
     })
 
 

@@ -9,5 +9,23 @@
         {% for order in orders %}
             <p>{{ order.ticket.title }}</p>
         {% endfor %}
+
+        <h2>Orders by week</h2>
+        <h3>Money Spent: {{ week.spent }} $</h3>
+        {% for order in week.orders %}
+            <p>{{ order.ticket.title }}</p>
+        {% endfor %}
+
+        <h2>Orders by month</h2>
+        <h3>Money Spent: {{ month.spent }} $</h3>
+        {% for order in month.orders %}
+            <p>{{ order.ticket.title }}</p>
+        {% endfor %}
+
+        <h2>Orders by Year</h2>
+        <h3>Money Spent: {{ year.spent }} $</h3>
+        {% for order in year.orders %}
+            <p>{{ order.ticket.title }}</p>
+        {% endfor %}
     </div>
 {% endblock %}
