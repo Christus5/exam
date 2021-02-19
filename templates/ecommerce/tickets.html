@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>My Tickets</h2>
+
+    <form>
+        <label for="ticket_title">Ticket Title: </label>
+        <input type="text" name="title" id="ticket_title" placeholder="Ticket Title"/>
+        <button type="submit">Search</button>
+    </form>
+
+    <table style="border-collapse: collapse; border: 1px solid black;">
+        <thead style="border-collapse: collapse; border: 1px solid black;">
+        <tr >
+            <th  style="border-collapse: collapse; border: 1px solid black;">Title</th>
+            <th  style="border-collapse: collapse; border: 1px solid black;">Start date</th>
+            <th  style="border-collapse: collapse; border: 1px solid black;">End date</th>
+        </tr>
+        </thead>
+        <tbody style="border-collapse: collapse; border: 1px solid black;">
+        {% for order in orders %}
+            <tr  style="border-collapse: collapse; border: 1px solid black;">
+                <td  style="border-collapse: collapse; border: 1px solid black;">{{ order.ticket.title }}</td>
+                <td  style="border-collapse: collapse; border: 1px solid black;">{{ order.ticket.start_date }}</td>
+                <td  style="border-collapse: collapse; border: 1px solid black;">{{ order.ticket.end_date }}</td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+    <div class="pages-wrapper">
+        {% if page.has_previous %}
+            <a href="?page=1
+            {% if request.GET.name %}&title={{ request.GET.title }}{% endif %}">First</a>
+            <a href="?page={{ page.previous_page_number }}
+            {% if request.GET.name %}&title={{ request.GET.title }}{% endif %}">Previous</a>
+        {% endif %}
+        {% for num in page.paginator.page_range %}
+            {% if page.number == num %}
+                <a class="disabled">{{ num }}</a>
+            {% elif num > page.number|add:'-3' and num < page.number|add:'3' %}
+                <a href="?page={{ num }}
+            {% if request.GET.name %}&title={{ request.GET.title }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page.has_next %}
+            <a href="?page={{ page.next_page_number }}
+            {% if request.GET.name %}&title={{ request.GET.title }}{% endif %}">Next</a>
+            <a href="?page={{ page.paginator.num_pages }}
+            {% if request.GET.name %}&title={{ request.GET.title }}{% endif %}">Last</a>
+        {% endif %}
+    </div>
+
+{% endblock %}

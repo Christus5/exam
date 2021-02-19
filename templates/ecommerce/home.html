@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>home</h1>
+    <div>
+        <h2>My orders</h2>
+        <h3>Money spent: {{ orders_info_price }} $</h3>
+        {% for order in orders %}
+            <p>{{ order.ticket.title }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}
