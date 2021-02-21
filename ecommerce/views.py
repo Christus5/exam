@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from ecommerce.forms import *
 from ecommerce.models import Ticket
@@ -25,6 +25,12 @@ def home_view(request):
 
     orders_year = orders.filter(ticket__end_date__gte=now - timezone.timedelta(days=365))
     orders_year_spent = orders_year.aggregate(Sum('price'))['price__sum']
+
+    # orders_info = orders.aggregate(
+    #     week_spent=Sum('price', filter=Q(ticket__end_date__gte=now - timezone.timedelta(weeks=1))),
+    #     month_spent=Sum('price', filter=Q(ticket__end_date__gte=now - timezone.timedelta(weeks=4))),
+    #     year_spent=Sum('price', filter=Q(ticket__end_date__gte=now - timezone.timedelta(days=365)))
+    # )
 
     return render(request, 'ecommerce/home.html', {
         'orders': orders,
@@ -67,8 +73,10 @@ def cart_view(request):
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
             user = request.user
-            # ticket = Ticket.objects.get(title=order_form.save(commit=False))
-            order_form.save()
+            ticket = order_form.save(commit=False).ticket
+            ticket = get_object_or_404(Ticket, title=ticket.title)
+
+            Order.objects.create(ticket=ticket, buyer=user, price=ticket.price)
 
     return render(request, 'ecommerce/cart.html', {
         'order_form': order_form

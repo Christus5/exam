@@ -5,6 +5,7 @@ from user.models import User
 
 class Ticket(models.Model):
     title = models.CharField(max_length=100)
+    price = models.PositiveSmallIntegerField(default=15)
 
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
